@@ -1,24 +1,21 @@
 # Based on the "trust" template v0.1.2
 # https://github.com/japaric/trust/tree/v0.1.2
 
+dist: xenial
 language: rust
 services: docker
+sudo: required
 
-matrix:
-  include:
-    # Linux
-    - env: TARGET=x86_64-unknown-linux-gnu
-      rust: nightly
+env:
+  global:
+    - CRATE_NAME=embtk-rotary-encoder
+  matrix:
+    - TARGET=x86_64-unknown-linux-gnu
 
-    # Bare metal
-    - env: TARGET=thumbv6m-none-eabi
-      rust: nightly
-    - env: TARGET=thumbv7m-none-eabi
-      rust: nightly
-    - env: TARGET=thumbv7em-none-eabi
-      rust: nightly
-    - env: TARGET=thumbv7em-none-eabihf
-      rust: nightly
+rust:
+  - stable
+  - beta
+  - nightly
 
 before_install:
   - set -e
@@ -33,22 +30,17 @@ script:
 
 after_script: set +e
 
-cache:
-  cargo: true
-  directories:
-    - $HOME/.xargo
-
+cache: cargo
 before_cache:
   # Travis can't cache files that are not readable by "others"
   - chmod -R a+r $HOME/.cargo
 
 branches:
   only:
+    # release tags
     - /^v\d+\.\d+\.\d+.*$/
-    - auto
     - master
-    - try
 
 notifications:
   email:
-on_success: never
+    on_success: never
